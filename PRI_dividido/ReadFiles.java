@@ -52,7 +52,7 @@ public class ReadFiles {
 
 
 
-
+    //este hashMap dá  {1:nome_doc1,2:nome_doc2,...}
     public Map<Integer, String> getTermoDocIDMap() {
         Map<Integer, String> termoDocIDsMap = new HashMap<>();
         for (Documento documento : documentos) {
@@ -62,7 +62,7 @@ public class ReadFiles {
     }
 
 
-
+    //vai retonar um indice na forma:{key:value, termo1:doc1, termo rato: aparece no doc1, e no doc3}
     public Map<String, List<Integer>> getIndiceInvertido() {
         Map<String, List<Integer>> indiceInvertido = new HashMap<>();
 
@@ -77,6 +77,7 @@ public class ReadFiles {
                 }
             }
         }
+
         // Imprime o índice invertido
         for (Map.Entry<String, List<Integer>> entrada : indiceInvertido.entrySet()) {
             String termo = entrada.getKey();
@@ -92,7 +93,7 @@ public class ReadFiles {
 
     }
 
-
+    //retorna o indice invertido: {termo1: {docID : posição}, "girafa": {aparece no doc34: aparece na posição 2,33,104}}
     public Map<String, Map<Integer, Set<Integer>>> getIndiceCompleto() {
         Map<String, Map<Integer, Set<Integer>>> indiceInvertidoCompleto = new HashMap<>();
 
@@ -151,10 +152,6 @@ public class ReadFiles {
 
         return indiceInvertidoCompleto;
     }
-
-
-
-
 
 
     /* 
