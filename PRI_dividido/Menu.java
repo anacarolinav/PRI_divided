@@ -11,6 +11,7 @@ public class Menu {
         List<Documento> documents = readFiles.getDocuments();
 
         Similaridade similaridade = new Similaridade(indiceInvertidoCompleto, documents);
+        
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
                 System.out.println("MENU:");
