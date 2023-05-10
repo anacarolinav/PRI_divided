@@ -63,13 +63,6 @@ public class ReadFiles {
 
 
 
-
-
-
-
-
-
-
     public Map<String, List<Integer>> getIndiceInvertido() {
         Map<String, List<Integer>> indiceInvertido = new HashMap<>();
 
@@ -98,12 +91,6 @@ public class ReadFiles {
         return indiceInvertido;
 
     }
-
-
-    
-
-
-
 
 
     public Map<String, Map<Integer, Set<Integer>>> getIndiceCompleto() {
