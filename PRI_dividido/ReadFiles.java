@@ -7,6 +7,9 @@ public class ReadFiles {
     public List<Documento> documentos;
     private File[] arquivos;
 
+    StopWords stopWords = new StopWords();
+    List<String> stopWordsList = stopWords.getStopWords();
+
     public ReadFiles() {
         File pasta = new File(CAMINHO_PASTA);
         arquivos = pasta.listFiles();
@@ -37,22 +40,14 @@ public class ReadFiles {
                 }
             }
         }
-        
+
     }
-
-
-
-
 
     public List<Documento> getDocuments() {
         return documentos;
     }
 
-
-
-
-
-    //este hashMap dá  {1:nome_doc1,2:nome_doc2,...}
+    // este hashMap dá {1:nome_doc1,2:nome_doc2,...}
     public Map<Integer, String> getTermoDocIDMap() {
         Map<Integer, String> termoDocIDsMap = new HashMap<>();
         for (Documento documento : documentos) {
@@ -61,8 +56,8 @@ public class ReadFiles {
         return termoDocIDsMap;
     }
 
-
-    //vai retonar um indice na forma:{key:value, termo1:doc1, termo rato: aparece no doc1, e no doc3}
+    // vai retonar um indice na forma:{key:value, termo1:doc1, termo rato: aparece
+    // no doc1, e no doc3}
     public Map<String, List<Integer>> getIndiceInvertido() {
         Map<String, List<Integer>> indiceInvertido = new HashMap<>();
 
@@ -93,7 +88,8 @@ public class ReadFiles {
 
     }
 
-    //retorna o indice invertido: {termo1: {docID : posição}, "girafa": {aparece no doc34: aparece na posição 2,33,104}}
+    // retorna o indice invertido: {termo1: {docID : posição}, "girafa": {aparece no
+    // doc34: aparece na posição 2,33,104}}
     public Map<String, Map<Integer, Set<Integer>>> getIndiceCompleto() {
         Map<String, Map<Integer, Set<Integer>>> indiceInvertidoCompleto = new HashMap<>();
 
@@ -153,12 +149,11 @@ public class ReadFiles {
         return indiceInvertidoCompleto;
     }
 
-
-    /* 
-    public static void main(String[] args) {
-        ReadFiles leitor = new ReadFiles();
-        leitor.getIndiceCompleto();
-    }
-    */
+    /*
+     * public static void main(String[] args) {
+     * ReadFiles leitor = new ReadFiles();
+     * leitor.getIndiceCompleto();
+     * }
+     */
 
 }
