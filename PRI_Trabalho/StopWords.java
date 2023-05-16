@@ -1,12 +1,12 @@
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StopWords {
-
-    private static final List<String> stop_words = Arrays.asList("de", "a", "o", "que", "e", "do", "da", "em", "um",
-            "para", "é", "com",
-            "não", "uma", "os", "no", "se", "na", "por", "mais", "as", "dos", "como", "mas", "foi", "ao", "ele",
-            "das", "tem", "à", "seu", "sua", "ou", "ser", "quando", "muito", "há", "nos", "já", "está", "eu",
+    private static final String[] STOPWORDS_ARRAY = {
+            "de", "a", "o", "que", "e", "do", "da", "em", "um", "para", "é", "com", "não", "uma", "os", "no", "se",
+            "na", "por", "mais", "as", "dos", "como", "mas", "foi", "ao", "ele", "das", "tem", "à", "seu", "sua", "ou",
+            "ser", "quando", "muito", "há", "nos", "já", "está", "eu", "lo", "la", "los", "las",
             "também", "só", "pelo", "pela", "até", "isso", "ela", "entre", "era", "depois", "sem", "mesmo", "aos",
             "ter", "seus", "quem", "nas", "me", "esse", "eles", "estão", "você", "tinha", "foram", "essa", "num",
             "nem", "suas", "meu", "às", "minha", "têm", "numa", "pelos", "elas", "havia", "seja", "qual", "será",
@@ -23,9 +23,16 @@ public class StopWords {
             "fossem", "for", "formos", "forem", "serei", "será", "seremos", "serão", "seria", "seríamos", "seriam",
             "tenho", "tem", "temos", "tém", "tinha", "tínhamos", "tinham", "tive", "teve", "tivemos", "tiveram",
             "tivera", "tivéramos", "tenha", "tenhamos", "tenham", "tivesse", "tivéssemos", "tivessem", "tiver",
-            "tivermos", "tiverem", "terei", "terá", "teremos", "terão", "teria", "teríamos", "teriam", "-");
+            "tivermos", "tiverem", "terei", "terá", "teremos", "terão", "teria", "teríamos", "teriam", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+    };
 
-    public List<String> getStopWords() {
-        return stop_words;
+    private Set<String> stopwords;
+
+    public StopWords() {
+        stopwords = new HashSet<>(Arrays.asList(STOPWORDS_ARRAY));
+    }
+
+    public boolean contains(String word) {
+        return stopwords.contains(word.toLowerCase());
     }
 }

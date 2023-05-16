@@ -1,14 +1,14 @@
 import java.io.*;
 import java.util.*;
+import java.text.Normalizer;
 
 public class ReadFiles {
-    private static final String CAMINHO_PASTA = "/Users/anacarolinaalves/Downloads/tentativa_PRI/Ficheiros";
+    private static final String CAMINHO_PASTA = "Ficheiros";
 
     public List<Documento> documentos;
     private File[] arquivos;
+    private StopWords stopWords;
 
-    StopWords stopWords = new StopWords();
-    List<String> stopWordsList = stopWords.getStopWords();
 
     public ReadFiles() {
         File pasta = new File(CAMINHO_PASTA);
@@ -22,6 +22,8 @@ public class ReadFiles {
 
         documentos = new ArrayList<>();
         int id = 1;
+        stopWords = new StopWords();
+
         for (File arquivo : arquivos) {
             if (arquivo.isFile()) {
                 String nomeArquivo = arquivo.getName();
@@ -29,8 +31,16 @@ public class ReadFiles {
                     StringBuilder conteudo = new StringBuilder();
                     String linha;
                     while ((linha = br.readLine()) != null) {
-                        conteudo.append(linha);
-                        conteudo.append(System.lineSeparator());
+                        linha = linha.replaceAll("[,.!?()/]", "");
+                        linha = linha.toLowerCase();
+                        linha = linha.replaceAll("-", " ");
+                        // remover acentuação
+                        linha = Normalizer.normalize(linha, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+                        String[] palavras = linha.split("\\s+");
+                        for (String palavra : palavras) {
+                            conteudo.append(palavra).append(" ");
+                            System.out.println(palavra);
+                        }
                     }
                     Documento documento = new Documento(id, conteudo.toString(), nomeArquivo);
                     documentos.add(documento);
@@ -40,14 +50,21 @@ public class ReadFiles {
                 }
             }
         }
-
     }
+
+
+
+
 
     public List<Documento> getDocuments() {
         return documentos;
     }
 
-    // este hashMap dá {1:nome_doc1,2:nome_doc2,...}
+
+
+
+
+
     public Map<Integer, String> getTermoDocIDMap() {
         Map<Integer, String> termoDocIDsMap = new HashMap<>();
         for (Documento documento : documentos) {
@@ -56,8 +73,10 @@ public class ReadFiles {
         return termoDocIDsMap;
     }
 
-    // vai retonar um indice na forma:{key:value, termo1:doc1, termo rato: aparece
-    // no doc1, e no doc3}
+
+
+
+
     public Map<String, List<Integer>> getIndiceInvertido() {
         Map<String, List<Integer>> indiceInvertido = new HashMap<>();
 
@@ -72,7 +91,6 @@ public class ReadFiles {
                 }
             }
         }
-
         // Imprime o índice invertido
         for (Map.Entry<String, List<Integer>> entrada : indiceInvertido.entrySet()) {
             String termo = entrada.getKey();
@@ -88,10 +106,14 @@ public class ReadFiles {
 
     }
 
-    // retorna o indice invertido: {termo1: {docID : posição}, "girafa": {aparece no
-    // doc34: aparece na posição 2,33,104}}
+
+    
+
+
+
+
     public Map<String, Map<Integer, Set<Integer>>> getIndiceCompleto() {
-        Map<String, Map<Integer, Set<Integer>>> indiceInvertidoCompleto = new HashMap<>();
+        Map<String, Map<Integer, Set<Integer>>> indiceInvertidoCompleto = new TreeMap<>();
 
         // Cria o índice invertido complexo
         for (Documento documento : documentos) {
@@ -100,8 +122,12 @@ public class ReadFiles {
 
             for (int i = 0; i < termos.length; i++) {
                 String termo = termos[i];
+                if (stopWords.contains(termo)) {
+                    continue; // Ignore stopwords
+                }
+
                 Map<Integer, Set<Integer>> docsInfo = indiceInvertidoCompleto.getOrDefault(termo, new HashMap<>());
-                Set<Integer> posicoesTermo = docsInfo.getOrDefault(docId, new HashSet<>());
+                Set<Integer> posicoesTermo = docsInfo.getOrDefault(docId, new TreeSet<>());
                 posicoesTermo.add(i);
                 docsInfo.put(docId, posicoesTermo);
                 indiceInvertidoCompleto.put(termo, docsInfo);
@@ -129,19 +155,19 @@ public class ReadFiles {
         }
 
         // Escreve o índice invertido completo em um arquivo
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter("output.txt"));
+        try (PrintWriter writer = new PrintWriter(new FileWriter("output.txt"))) {
             for (Map.Entry<String, Map<Integer, Set<Integer>>> entrada : indiceInvertidoCompleto.entrySet()) {
                 String termo = entrada.getKey();
                 Map<Integer, Set<Integer>> docsInfo = entrada.getValue();
                 int freqDoc = freqDocMap.get(termo);
-                writer.print(termo + ": {" + freqDoc + "} ");
-                for (Map.Entry<Integer, Set<Integer>> docInfo : docsInfo.entrySet()) {
-                    writer.print(docInfo.getKey() + ": " + docInfo.getValue() + " ");
+                if (!stopWords.contains(termo)) {
+                    writer.print(termo + ": {" + freqDoc + "} ");
+                    for (Map.Entry<Integer, Set<Integer>> docInfo : docsInfo.entrySet()) {
+                        writer.print(docInfo.getKey() + ": " + docInfo.getValue() + " ");
+                    }
+                    writer.println();
                 }
-                writer.println();
             }
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -149,11 +175,15 @@ public class ReadFiles {
         return indiceInvertidoCompleto;
     }
 
-    /*
-     * public static void main(String[] args) {
-     * ReadFiles leitor = new ReadFiles();
-     * leitor.getIndiceCompleto();
-     * }
-     */
+
+
+
+
+
+
+    public static void main(String[] args) {
+        ReadFiles leitor = new ReadFiles();
+        leitor.getIndiceCompleto();
+    }
 
 }
