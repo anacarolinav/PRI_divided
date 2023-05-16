@@ -94,36 +94,64 @@ public class Menu {
                     //}
 
                 }else if (opcao == 4) {
-                    System.out.println("Digite o primeiro termo:");
-                    String termo1 = scanner.next();
+                    System.out.println("Digite a consulta no formato 'termo1 OPERADOR termo2':");
+                    scanner.nextLine();
+                    String consulta = scanner.nextLine();
+                    String[] consultaArray = consulta.split(" ");
                 
-                    System.out.println("Digite o operador lógico (AND, OR ou NOT):");
-                    String operador = scanner.next();
-                
-                    System.out.println("Digite o segundo termo:");
-                    String termo2 = scanner.next();
-                
-                    BooleanModel booleanModel = new BooleanModel(indiceInvertido);
-                    Set<Integer> docIDs = new HashSet<>();
-                
-                    if (operador.equalsIgnoreCase("AND")) {
-                        docIDs.addAll(booleanModel.consultarComAND(termo1 + " " + termo2));
-                    } else if (operador.equalsIgnoreCase("OR")) {
-                        docIDs.addAll(booleanModel.consultarComOR(termo1 + " " + termo2));
-                    } else if (operador.equalsIgnoreCase("NOT")) {
-                        docIDs.addAll(booleanModel.consultarComNOT(termo1 + " " + termo2));
+                    if (consultaArray.length != 3) {
+                        System.out.println("Consulta inválida!");
                     } else {
-                        System.out.println("Operador lógico inválido!");
-                    }
+                        String termo1 = consultaArray[0];
+                        String operador = consultaArray[1];
+                        String termo2 = consultaArray[2];
                 
-                    if (!docIDs.isEmpty()) {
-                        System.out.println("Os termos " + termo1 + " " + operador + " " + termo2 + " existem nos seguintes documentos:");
-                        System.out.println(docIDs);
-                    } else {
-                        System.out.println("Termos não encontrados juntos!");
+                        BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
+                        List<Integer> docIDs = new ArrayList<>();
+                
+                        if (operador.equalsIgnoreCase("AND")) {
+                            docIDs = booleanModel.consultarComAND(termo1 + " " + termo2);
+                        } else if (operador.equalsIgnoreCase("OR")) {
+                            docIDs = booleanModel.consultarComOR(termo1 + " " + termo2);
+
+                            //Assim está a fazer o AND NOT
+                        } else if (operador.equalsIgnoreCase("ANDNOT")) {
+                            List<String> nomesDocumentos = booleanModel.consultarComNOT(termo1 + " " + termo2);
+                            if (!nomesDocumentos.isEmpty()) {
+                                System.out.println("Os termos " + termo1 + " " + operador + " " + termo2 + " existem nos seguintes documentos:");
+                                System.out.println(nomesDocumentos);
+                            } else {
+                                System.out.println("Termos encontrados juntos!");
+                            }
+
+                            //Assim está a fazer para o OR NOT a verificar???
+                        } else if (operador.equalsIgnoreCase("ORNOT")) {
+                            List<String> nomesDocumentos = booleanModel.consultarComORNOT(termo1 + " " + termo2);
+                            if (!nomesDocumentos.isEmpty()) {
+                                System.out.println("Os termos " + termo1 + " " + operador + " " + termo2 + " existem nos seguintes documentos:");
+                                System.out.println(nomesDocumentos);
+                            } else {
+                                System.out.println("Termos encontrados juntos!");
+                            }
+                        }else {
+                            System.out.println("Operador lógico inválido!");
+                        }
+                
+                        if (!docIDs.isEmpty()) {
+                            System.out.println("Os termos " + termo1 + " " + operador + " " + termo2 + " existem nos seguintes documentos:");
+                
+                            List<String> nomesDocumentos = new ArrayList<>();
+                            for (int docID : docIDs) {
+                                String nomeDocumento = booleanModel.obterNomeDocumento(docID);
+                                nomesDocumentos.add(nomeDocumento);
+                            }
+                
+                            System.out.println(nomesDocumentos);
+                        } else {
+                            System.out.println("Termos não encontrados juntos!");
+                        }
                     }
                 }
-                
 
             }
         }
