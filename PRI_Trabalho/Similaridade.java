@@ -33,13 +33,6 @@ public class Similaridade {
     }
 
 
-
-
-
-
-
-
-
     double[] getNormalizedVector(Documento document) {
         String[] terms = document.getConteudo().toLowerCase().replaceAll("\\p{Punct}", "").split("\\s+");
         double[] vector = new double[indiceInvertidoCompleto.size()];
@@ -60,13 +53,6 @@ public class Similaridade {
         }
         return vector;
     }
-
-
-
-
-
-
-
 
     double cosineSimilarity(double[] v1, double[] v2) {
         double dotProduct = 0;

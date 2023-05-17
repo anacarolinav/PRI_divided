@@ -13,16 +13,16 @@ public class Menu {
         Similaridade similaridade = new Similaridade(indiceInvertidoCompleto, documents);
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
+                System.out.println("------------------------------------------------------------------------");
+
                 System.out.println("MENU:");
                 System.out.println("0 - Sair");
                 System.out.println("1 - Obter o nome do arquivo pelo DocID");
                 System.out.println("2 - Lista de identificadores de documentos dado um termo");
                 System.out.println("3 - Similaridade do cosseno");
                 System.out.println("4 - Modelo Boleano");
-                System.out.println("5 - NOT");
-                System.out.println("6 - AND NOT");
-                System.out.println("7 - OR NOT");
                 System.out.print("Escolha uma opção: ");
+
                 int opcao = scanner.nextInt();
 
                 if (opcao == 0) {
@@ -100,9 +100,8 @@ public class Menu {
                     String consulta = scanner.nextLine();
                     String[] consultaArray = consulta.split(" ");
 
-                    if (consultaArray.length != 3) {
-                        System.out.println("Consulta inválida!");
-                    } else {
+                    if (consultaArray.length == 3) {
+
                         String termo1 = consultaArray[0];
                         String operador = consultaArray[1];
                         String termo2 = consultaArray[2];
@@ -133,22 +132,77 @@ public class Menu {
                         } else {
                             System.out.println("Termos não encontrados juntos!");
                         }
-                    }
-                } else if (opcao == 5) {
-                    System.out.println("Digite a consulta no formato 'termo1 NOT termo2':");
-                    scanner.nextLine();
-                    String consulta = scanner.nextLine();
+                    } else if (consultaArray.length == 4) {
 
-                    BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
-                    List<String> nomesDocumentos = booleanModel.consultarComNOT(consulta);
+                        String termo1 = consultaArray[0];
+                        String operador = consultaArray[1];
+                        String operadorNOT = consultaArray[2];
+                        String termo2 = consultaArray[3];
 
-                    if (!nomesDocumentos.isEmpty()) {
-                        System.out.println("Os termos " + consulta + " existem nos seguintes documentos:");
-                        System.out.println(nomesDocumentos);
+                        BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
+                        List<String> docIDsNaoTermo2 = booleanModel.consultarComNOT(termo2);
+
+                        List<String> docIDsTermo1 = new ArrayList<>();
+                        for (String termo : termo1.split("\\s+")) {
+                            List<Integer> docIDs = indiceInvertido.getOrDefault(termo, Collections.emptyList());
+                            for (int docID : docIDs) {
+                                docIDsTermo1.add(booleanModel.obterNomeDocumento(docID));
+                            }
+                        }
+
+                        // verificar se operador é AND ou OR
+                        if (operador.equalsIgnoreCase("AND")) {
+                            List<String> nomesDocumentos = new ArrayList<>();
+                            for (String docID : docIDsTermo1) {
+                                if (docIDsNaoTermo2.contains(docID)) {
+                                    nomesDocumentos.add(docID);
+                                }
+                            }
+
+                            if (!nomesDocumentos.isEmpty()) {
+                                System.out.println("Os termos " + termo1 + " " + operador + " " + operadorNOT + " " + termo2
+                                        + " existem nos seguintes documentos:");
+
+                                System.out.println(nomesDocumentos);
+                            } else {
+                                System.out.println("Termos não encontrados juntos!");
+                            }
+                        } else if (operador.equalsIgnoreCase("OR")) {
+                            Set<String> nomesDocumentos = new HashSet<>();
+                            nomesDocumentos.addAll(docIDsTermo1);
+                            nomesDocumentos.addAll(docIDsNaoTermo2);
+
+                            if (!nomesDocumentos.isEmpty()) {
+                                System.out.println("Os termos " + termo1 + " " + operador + " " + operadorNOT + " " + termo2
+                                        + " existem nos seguintes documentos:");
+
+                                System.out.println(nomesDocumentos);
+                            } else {
+                                System.out.println("Termos não encontrados juntos!");
+                            }
+                        }
+
                     } else {
-                        System.out.println("Termos não encontrados!");
+                        System.out.println("Pesquisa inválida!");
                     }
 
+                    /*
+                     * } else if (opcao == 5) {
+                     * System.out.println("Digite a consulta no formato 'termo1 NOT termo2':");
+                     * scanner.nextLine();
+                     * String consulta = scanner.nextLine();
+                     * 
+                     * BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
+                     * List<String> nomesDocumentos = booleanModel.consultarComNOT(consulta);
+                     * 
+                     * if (!nomesDocumentos.isEmpty()) {
+                     * System.out.println("Os termos " + consulta +
+                     * " existem nos seguintes documentos:");
+                     * System.out.println(nomesDocumentos);
+                     * } else {
+                     * System.out.println("Termos não encontrados!");
+                     * }
+                     
                 } else if (opcao == 6) {
                     System.out.println("Digite os termos da consulta no formato 'termo1 AND NOT termo2':");
                     scanner.nextLine();
@@ -231,10 +285,17 @@ public class Menu {
                         } else {
                             System.out.println("Termos não encontrados juntos!");
                         }
-                    }
+                    }*/
                 }
 
             }
         }
     }
 }
+
+/*
+ * termo1 AND/OR termo2 --- 3
+ * NOT termo1 AND/OR termo2 --- 4
+ * termo1 AND/OR NOT termo2 --- 4
+ * NOT termo1 AND/OR NOT termo2 --- 5
+ */
