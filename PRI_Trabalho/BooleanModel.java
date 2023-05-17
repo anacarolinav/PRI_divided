@@ -84,35 +84,6 @@ public class BooleanModel {
 
         return nomesDocumentos;
     }
-
-    public List<String> consultarComORNOT(String consulta) {
-        String[] termos = consulta.split("\\s+");
-    
-        Set<Integer> docIDsConsulta = new HashSet<>();
-        Set<Integer> resultados = new HashSet<>();
-    
-        for (String termo : termos) {
-            List<Integer> docIDs = indiceInvertido.getOrDefault(termo, Collections.emptyList());
-            docIDsConsulta.addAll(docIDs);
-        }
-    
-        for (String termo : indiceInvertido.keySet()) {
-            List<Integer> docIDs = indiceInvertido.get(termo);
-            for (int docID : docIDs) {
-                resultados.add(docID);
-            }
-        }
-    
-        //resultados.removeAll(docIDsConsulta);
-    
-        List<String> nomesDocumentos = new ArrayList<>();
-        for (int docID : resultados) {
-            String nomeDocumento = obterNomeDocumento(docID);
-            nomesDocumentos.add(nomeDocumento);
-        }
-    
-        return nomesDocumentos;
-    }
     
 
     // Método para obter o nome do documento com base no ID do documento
