@@ -29,6 +29,7 @@ public class Menu {
                     System.out.println("Saindo...");
                     break;
                 } else if (opcao == 1) {
+
                     System.out.print("Digite o ID do documento: ");
                     int docIdUser = scanner.nextInt();
                     if (termoDocIDsMap.containsKey(docIdUser)) {
@@ -60,8 +61,11 @@ public class Menu {
                 } else if (opcao == 3) {
                     System.out.println("Digite uma query:");
                     scanner.nextLine(); // Limpa o buffer do Scanner
-                    String query = scanner.nextLine();
 
+                    // Começa a contar o tempo
+                    long startTime = System.currentTimeMillis();
+
+                    String query = scanner.nextLine();
                     Documento queryDoc = new Documento(0, query, "Query");
 
                     Map<String, Double> similarityScores = new HashMap<>();
@@ -86,17 +90,17 @@ public class Menu {
                         System.out.printf("Documento: %s | Similaridade: %.4f%n", docName, similarity);
                     }
 
-                    // Imprimir os documentos e suas respectivas similaridades
-                    // for (Map.Entry<String, Double> entry : sortedSimilarityScores) {
-                    // String docName = entry.getKey();
-                    // double similarity = entry.getValue();
-                    // System.out.printf("Similaridade do cosseno entre a query e %s: %.4f%n",
-                    // docName, similarity);
-                    // }
+                    long endTime = System.currentTimeMillis();
+                    long duration = endTime - startTime;
+                    System.out.println("Tempo de execução: " + duration + " milissegundos");
 
                 } else if (opcao == 4) {
                     System.out.println("Digite a consulta no formato 'termo1 OPERADOR termo2':");
                     scanner.nextLine();
+
+                    // Começa a contar o tempo
+                    long startTime = System.currentTimeMillis();
+
                     String consulta = scanner.nextLine();
                     String[] consultaArray = consulta.split(" ");
 
@@ -160,8 +164,9 @@ public class Menu {
                             }
 
                             if (!nomesDocumentos.isEmpty()) {
-                                System.out.println("Os termos " + termo1 + " " + operador + " " + operadorNOT + " " + termo2
-                                        + " existem nos seguintes documentos:");
+                                System.out.println(
+                                        "Os termos " + termo1 + " " + operador + " " + operadorNOT + " " + termo2
+                                                + " existem nos seguintes documentos:");
 
                                 System.out.println(nomesDocumentos);
                             } else {
@@ -173,8 +178,9 @@ public class Menu {
                             nomesDocumentos.addAll(docIDsNaoTermo2);
 
                             if (!nomesDocumentos.isEmpty()) {
-                                System.out.println("Os termos " + termo1 + " " + operador + " " + operadorNOT + " " + termo2
-                                        + " existem nos seguintes documentos:");
+                                System.out.println(
+                                        "Os termos " + termo1 + " " + operador + " " + operadorNOT + " " + termo2
+                                                + " existem nos seguintes documentos:");
 
                                 System.out.println(nomesDocumentos);
                             } else {
@@ -182,120 +188,16 @@ public class Menu {
                             }
                         }
 
+                        long endTime = System.currentTimeMillis();
+                        long duration = endTime - startTime;
+                        System.out.println("Tempo de execução: " + duration + " milissegundos");
+
                     } else {
                         System.out.println("Pesquisa inválida!");
                     }
-
-                    /*
-                     * } else if (opcao == 5) {
-                     * System.out.println("Digite a consulta no formato 'termo1 NOT termo2':");
-                     * scanner.nextLine();
-                     * String consulta = scanner.nextLine();
-                     * 
-                     * BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
-                     * List<String> nomesDocumentos = booleanModel.consultarComNOT(consulta);
-                     * 
-                     * if (!nomesDocumentos.isEmpty()) {
-                     * System.out.println("Os termos " + consulta +
-                     * " existem nos seguintes documentos:");
-                     * System.out.println(nomesDocumentos);
-                     * } else {
-                     * System.out.println("Termos não encontrados!");
-                     * }
-                     
-                } else if (opcao == 6) {
-                    System.out.println("Digite os termos da consulta no formato 'termo1 AND NOT termo2':");
-                    scanner.nextLine();
-                    String consulta = scanner.nextLine();
-                    String[] consultaArray = consulta.split(" ");
-
-                    if (consultaArray.length != 4) {
-                        System.out.println("Consulta inválida!");
-                    } else {
-                        String termo1 = consultaArray[0];
-                        String operador = consultaArray[1];
-                        String operadorNOT = consultaArray[2];
-                        String termo2 = consultaArray[3];
-
-                        BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
-                        List<String> docIDsNaoTermo2 = booleanModel.consultarComNOT(termo2);
-                        System.out.println(docIDsNaoTermo2);
-
-                        List<String> docIDsTermo1 = new ArrayList<>();
-                        for (String termo : termo1.split("\\s+")) {
-                            List<Integer> docIDs = indiceInvertido.getOrDefault(termo, Collections.emptyList());
-                            for (int docID : docIDs) {
-                                docIDsTermo1.add(booleanModel.obterNomeDocumento(docID));
-                            }
-                        }
-                        System.out.println(docIDsTermo1);
-
-                        List<String> nomesDocumentos = new ArrayList<>();
-                        for (String docID : docIDsTermo1) {
-                            if (docIDsNaoTermo2.contains(docID)) {
-                                nomesDocumentos.add(docID);
-                            }
-                        }
-
-                        if (!nomesDocumentos.isEmpty()) {
-                            System.out.println("Os termos " + termo1 + " " + operador + " " + operadorNOT + termo2
-                                    + " existem nos seguintes documentos:");
-
-                            System.out.println(nomesDocumentos);
-                        } else {
-                            System.out.println("Termos não encontrados juntos!");
-                        }
-                    }
-                } else if (opcao == 7) {
-                    System.out.println("Digite os termos da consulta no formato 'termo1 OR NOT termo2':");
-                    scanner.nextLine();
-                    String consulta = scanner.nextLine();
-                    String[] consultaArray = consulta.split(" ");
-
-                    if (consultaArray.length != 4) {
-                        System.out.println("Consulta inválida!");
-                    } else {
-                        String termo1 = consultaArray[0];
-                        String operador = consultaArray[1];
-                        String operadorNOT = consultaArray[2];
-                        String termo2 = consultaArray[3];
-
-                        BooleanModel booleanModel = new BooleanModel(indiceInvertido, documents);
-                        List<String> docIDsNaoTermo2 = booleanModel.consultarComNOT(termo2);
-                        System.out.println(docIDsNaoTermo2);
-
-                        List<String> docIDsTermo1 = new ArrayList<>();
-                        for (String termo : termo1.split("\\s+")) {
-                            List<Integer> docIDs = indiceInvertido.getOrDefault(termo, Collections.emptyList());
-                            for (int docID : docIDs) {
-                                docIDsTermo1.add(booleanModel.obterNomeDocumento(docID));
-                            }
-                        }
-                        System.out.println(docIDsTermo1);
-
-                        Set<String> nomesDocumentos = new HashSet<>();
-                        nomesDocumentos.addAll(docIDsTermo1);
-                        nomesDocumentos.addAll(docIDsNaoTermo2);
-
-                        if (!nomesDocumentos.isEmpty()) {
-                            System.out.println("Os termos " + termo1 + " " + operador + " " + operadorNOT + termo2
-                                    + " existem nos seguintes documentos:");
-
-                            System.out.println(nomesDocumentos);
-                        } else {
-                            System.out.println("Termos não encontrados juntos!");
-                        }
-                    }*/
                 }
 
             }
         }
     }
 }
-
-/*
- * termo1 AND/OR termo2 --- 3
- * NOT termo1 AND/OR termo2 --- 4
- * termo1 AND/OR NOT termo2 --- 4
- * NOT termo1 AND/OR NOT termo2 --- 5
- */
