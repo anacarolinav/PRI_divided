@@ -136,6 +136,7 @@ public class Menu {
                         } else {
                             System.out.println("Termos não encontrados juntos!");
                         }
+
                     } else if (consultaArray.length == 4) {
 
                         String termo1 = consultaArray[0];
