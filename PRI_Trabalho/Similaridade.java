@@ -2,6 +2,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Similaridade {
+    
     ReadFiles readFiles = new ReadFiles();
     Map<String, Map<Integer, Set<Integer>>> indiceInvertidoCompleto = readFiles.getIndiceCompleto();
     private List<Documento> documents;
@@ -10,11 +11,6 @@ public class Similaridade {
         this.indiceInvertidoCompleto = indiceInvertidoCompleto;
         this.documents = documents;
     }
-
-
-
-
-
     
     public void calculateSimilarity() {
         int numDocs = documents.size();
